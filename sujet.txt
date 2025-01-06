@@ -1,0 +1,47 @@
+# Synchronisation S3
+
+## Amazon S3
+
+S3 est un service de stockage d'objets dans le cloud sur AWS. Sur un compte AWS on peut définir des _buckets_ qui sont des espaces de stockage 
+qui peuvent alors contenir des _objets_.
+Les objets sont identifiés par une _key_ et peuvent être enrichis de _tags_ et de _métadonnées_.
+Dans un bucket, il n'y a pas de hiérarchie de dossiers, 
+mais on peut simuler une structure de dossiers: les keys peuvent contenir des slashs `/` qui peuvent ainsi être utilisés pour représenter une arborescence.
+
+## Objectifs de l'exercice
+
+On souhaite synchroniser un *dossier* local avec un bucket S3. Pour cela, on va écrire un script qui vérifie:
+
+- si un fichier sur le bucket n'existe pas dans le dossier local, il est supprimé du bucket.
+- si un fichier est dans le dossier local mais pas sur le bucket, il est uploadé sur le bucket.
+- si un fichier est présent dans les deux, on met à jour le fichier sur le bucket _si nécessaire_.
+
+Il est intéressant de noter que dans aucun cas on ne touche au dossier local. Ce dossier local peut contenir un nombre arbitraire de fichiers et de sous dossiers à synchroniser.
+
+Le choix du langage est libre. Quelques recommandations néanmoins: si le langage choisi est Python, 
+il est recommandé d'utiliser la bibliothèque `boto3` pour communiquer avec le bucket. 
+Si le langage choisi est Typescript, il est recommandé d'utiliser la bibliothèque `aws-sdk`. Pour un autre langage, le choix est laissé au candidat.
+
+## Serveur de développement
+
+Pour le développement et les tests, on pourra utiliser [Minio](https://hub.docker.com/r/minio/minio) qui utilise la même API que S3. On peut lancer un conteneur Docker avec la commande suivante:
+
+```bash
+docker run \
+   -p 9000:9000 \
+   -p 9001:9001 \
+   --name minio \
+   -v /tmp/minio-data:/data \
+   -e "MINIO_ROOT_USER=ROOTNAME" \
+   -e "MINIO_ROOT_PASSWORD=CHANGEME123" \
+   quay.io/minio/minio server /data --console-address ":9001"
+```
+
+Une console web est disponible à l'adresse `http://127.0.0.1:9000/` pour créer des buckets et visualiser les fichiers ainsi que pour créer une clé d'accès pour le script.
+
+## Modalités
+
+- Durée: 1h30-2h
+- Accès à Internet autorisé et encouragé
+- Le livrable est le script et un court fichier README expliquant comment l'utiliser et le tester
+- Le focus est sur l'obtention d'un code fonctionnel. Les bonnes pratiques, la maintenabilité, la performance, etc. seront discutées pendant le debriefing oral.
